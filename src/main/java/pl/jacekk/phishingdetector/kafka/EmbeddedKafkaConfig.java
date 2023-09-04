@@ -19,4 +19,5 @@ public class EmbeddedKafkaConfig {
     public NewTopic topic() {
         return TopicBuilder.name("sms").partitions(1).replicas(1).build();
     }
+
 }
