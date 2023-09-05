@@ -1,4 +1,4 @@
-package pl.jacekk.phishingdetector.kafka;
+package pl.jacekk.phishingdetector.mock.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ public class EmbeddedKafkaConfig {
 
     @Bean
     public NewTopic topic() {
-        return TopicBuilder.name("sms").partitions(1).replicas(1).build();
+        return TopicBuilder.name("sms-source").partitions(1).replicas(1).build();
     }
 
 }

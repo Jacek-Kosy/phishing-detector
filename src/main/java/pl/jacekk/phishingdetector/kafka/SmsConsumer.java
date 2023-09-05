@@ -14,7 +14,7 @@ public class SmsConsumer {
     private final RegistrationSmsHandler registrationSmsHandler;
 
 
-    @KafkaListener(topics = "sms", groupId = "phishing-detector")
+    @KafkaListener(topics = "sms-source", groupId = "phishing-detector")
     public void listen(SmsMessage message) {
         registrationSmsHandler.handle(message);
     }
