@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ContractEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Getter
     @Column(unique = true, nullable = false)
     private String msisdn;

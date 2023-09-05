@@ -1,7 +1,10 @@
 package pl.jacekk.phishingdetector.service;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.entity.ContractEntity;
@@ -10,9 +13,11 @@ import pl.jacekk.phishingdetector.repository.ContractRepository;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RegistrationSmsHandler implements SmsHandler {
     private final ContractRepository repository;
+    @Getter
     private SmsHandler next;
 
     @Value("${registration.phone-number}")
@@ -30,12 +35,12 @@ public class RegistrationSmsHandler implements SmsHandler {
 
     @Override
     public void handle(SmsMessage sms) {
+        var sender = sms.sender();
         if (sms.recipient().equals(registrationNumber)) {
-            if (sms.message().equals(registerMessage)) register(sms.sender());
-            else if (sms.message().equals(unregisterMessage)) unregister(sms.sender());
-            else log.warn("Invalid message!");
+            if (sms.message().equals(registerMessage)) register(sender);
+            else if (sms.message().equals(unregisterMessage)) unregister(sender);
+            else log.info("Invalid registration message from MSISDN: {}!", sender);
         }
-        log.info("Passing the message to the next handler...");
         if (next != null) next.handle(sms);
     }
 
@@ -52,7 +57,7 @@ public class RegistrationSmsHandler implements SmsHandler {
         var contract = repository.findByMsisdn(msisdn);
         contract.ifPresentOrElse(contractEntity -> {
             var serviceStatus = contractEntity.getHasActiveService();
-            if (serviceStatus) deactivateService(contractEntity);
+            if (serviceStatus != null && serviceStatus) deactivateService(contractEntity);
             else log.info("The service is already deactivated for MSISDN: {}", msisdn);
         }, () -> log.info("MSISDN: {} is not from our network", msisdn));
     }
