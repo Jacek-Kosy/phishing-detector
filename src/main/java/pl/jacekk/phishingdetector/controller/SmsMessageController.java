@@ -19,7 +19,7 @@ public class SmsMessageController {
     @PostMapping("/post")
     public void postSmsMessage(@RequestBody SmsMessage smsMessage) {
         log.info("Posting a new message to the sms topic...");
-        template.send("sms", smsMessage.sender(), smsMessage);
+        template.send("sms-source", smsMessage.sender(), smsMessage);
     }
 
 }

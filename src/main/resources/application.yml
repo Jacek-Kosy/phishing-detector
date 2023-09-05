@@ -1,4 +1,8 @@
 api-prefix: /api/v1
+registration:
+  phone-number: 6789
+  register-message: START
+  unregister-message: STOP
 spring:
   datasource:
     url: jdbc:h2:file:./data/h2
@@ -7,6 +11,9 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -18,4 +25,7 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  sql:
+    init:
+      mode: always
 
