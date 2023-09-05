@@ -1,6 +1,5 @@
 package pl.jacekk.phishingdetector.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -14,19 +13,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RegistrationSmsHandlerTest {
     private final ContractRepository repository = Mockito.mock(ContractRepository.class);
-    private RegistrationSmsHandler registrationSmsHandler;
-
-    @BeforeEach
-    void setup() {
-        registrationSmsHandler = new RegistrationSmsHandler(repository, null,
-                "1234", "START", "STOP");
-    }
+    private final RegistrationSmsHandler registrationSmsHandler = new RegistrationSmsHandler(repository, null,
+            "1234", "START", "STOP");
 
     @Test
     void shouldSetNextHandler() {
         var handler = Mockito.mock(SmsHandler.class);
-        registrationSmsHandler.setNext(handler);
-        assertNotNull(registrationSmsHandler.getNext());
+        var registrationHandler = new RegistrationSmsHandler(repository);
+        registrationHandler.setNext(handler);
+        assertNotNull(registrationHandler.getNext());
     }
 
     @Test
