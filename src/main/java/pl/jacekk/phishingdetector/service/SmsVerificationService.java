@@ -12,7 +12,7 @@ public class SmsVerificationService {
     private final URLVerificationSmsHandler urlVerificationSmsHandler;
 
     @PostConstruct
-    void init() {
+    private void init() {
         registrationSmsHandler.setNext(urlVerificationSmsHandler);
     }
 

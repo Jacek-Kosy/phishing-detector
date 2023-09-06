@@ -3,6 +3,7 @@ package pl.jacekk.phishingdetector.service;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import pl.jacekk.phishingdetector.repository.ContractRepository;
+import pl.jacekk.phishingdetector.repository.LinkRepository;
 
 import java.util.List;
 
@@ -10,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class URLVerificationSmsHandlerTest {
     private final ContractRepository contractRepository = Mockito.mock(ContractRepository.class);
-    private final URLVerificationSmsHandler urlVerificationSmsHandler = new URLVerificationSmsHandler(contractRepository);
+    private final LinkRepository linkRepository = Mockito.mock(LinkRepository.class);
+    private final URLVerificationSmsHandler urlVerificationSmsHandler = new URLVerificationSmsHandler(contractRepository, linkRepository);
 
     @Test
     void shouldReturnAllMatchingURLs() {

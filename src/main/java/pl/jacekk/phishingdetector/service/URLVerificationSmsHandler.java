@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import pl.jacekk.phishingdetector.entity.LinkEntity;
 import pl.jacekk.phishingdetector.model.SmsMessage;
 import pl.jacekk.phishingdetector.repository.ContractRepository;
+import pl.jacekk.phishingdetector.repository.LinkRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,8 @@ import java.util.regex.Pattern;
 public class URLVerificationSmsHandler implements SmsHandler {
     private static final Pattern URL_PATTERN =
             Pattern.compile("(?i)\\b((?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))");
-    private final ContractRepository repository;
+    private final ContractRepository contractRepository;
+    private final LinkRepository linkRepository;
     @Getter
     private SmsHandler next;
 
@@ -31,11 +34,15 @@ public class URLVerificationSmsHandler implements SmsHandler {
         var urls = findURLs(sms.message());
         if (!urls.isEmpty() && verifyServiceStatus(sms.recipient())) {
             log.info("Message: {} qualifies for malicious URL verification", sms.message());
+            urls.forEach(url -> {
+                var savedLink = linkRepository.findByUrl(url);
+                if (savedLink.isEmpty()) linkRepository.save(new LinkEntity(url));
+            });
         } else if (next != null) next.handle(sms);
     }
 
     protected boolean verifyServiceStatus(String msisdn) {
-        var contract = repository.findByMsisdn(msisdn);
+        var contract = contractRepository.findByMsisdn(msisdn);
         if (contract.isEmpty()) return false;
         else if (contract.get().getHasActiveService() == null) return false;
         else return contract.get().getHasActiveService();
