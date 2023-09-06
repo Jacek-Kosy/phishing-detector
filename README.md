@@ -1,2 +1,2 @@
 Dodatkowe założenia:
-- Zakładamy, że w wiadomości SMS jest maksymalnie jeden URL
+- W wiadomości może się znajdować więcej niż jeden link

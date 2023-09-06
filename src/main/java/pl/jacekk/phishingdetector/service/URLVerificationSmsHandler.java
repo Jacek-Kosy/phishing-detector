@@ -16,14 +16,17 @@ public class URLVerificationSmsHandler implements SmsHandler {
     private final ContractRepository repository;
     @Getter
     private SmsHandler next;
+
     @Override
     public void setNext(SmsHandler smsHandler) {
-
+        next = smsHandler;
     }
 
     @Override
     public void handle(SmsMessage sms) {
+        if (verifyServiceStatus(sms.recipient())) {
 
+        } else if (next != null) next.handle(sms);
     }
 
     protected boolean verifyServiceStatus(String msisdn) {
@@ -33,11 +36,11 @@ public class URLVerificationSmsHandler implements SmsHandler {
         else return contract.get().getHasActiveService();
     }
 
-    protected String findURL(String message) {
+    protected List<String> findURL(String message) {
         var result = new ArrayList<String>();
         var matcher = URL_PATTERN.matcher(message);
-        if (matcher.find()) return matcher.group();
-        return null;
+        while (matcher.find()) result.add(matcher.group());
+        return result;
     }
 
 
