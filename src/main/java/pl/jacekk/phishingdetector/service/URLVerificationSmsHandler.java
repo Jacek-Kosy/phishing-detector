@@ -2,6 +2,8 @@ package pl.jacekk.phishingdetector.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.model.SmsMessage;
 import pl.jacekk.phishingdetector.repository.ContractRepository;
 
@@ -9,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Slf4j
+@Component
 @RequiredArgsConstructor
 public class URLVerificationSmsHandler implements SmsHandler {
     private static final Pattern URL_PATTERN =
@@ -24,8 +28,9 @@ public class URLVerificationSmsHandler implements SmsHandler {
 
     @Override
     public void handle(SmsMessage sms) {
-        if (verifyServiceStatus(sms.recipient())) {
-
+        var urls = findURLs(sms.message());
+        if (!urls.isEmpty() && verifyServiceStatus(sms.recipient())) {
+            log.info("Message: {} qualifies for malicious URL verification", sms.message());
         } else if (next != null) next.handle(sms);
     }
 
@@ -36,7 +41,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
         else return contract.get().getHasActiveService();
     }
 
-    protected List<String> findURL(String message) {
+    protected List<String> findURLs(String message) {
         var result = new ArrayList<String>();
         var matcher = URL_PATTERN.matcher(message);
         while (matcher.find()) result.add(matcher.group());

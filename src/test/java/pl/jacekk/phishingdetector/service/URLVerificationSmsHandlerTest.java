@@ -21,7 +21,7 @@ class URLVerificationSmsHandlerTest {
                 https://wikipedia.org
                 Matteo:http://localhost:8080
                 """;
-        var result = urlVerificationSmsHandler.findURL(message);
+        var result = urlVerificationSmsHandler.findURLs(message);
         var expected = List.of("www.wp.pl", "https://wikipedia.org", "http://localhost:8080", "https://www.m-bonk.pl.ng/personal-data");
         assertTrue(result.containsAll(expected));
     }
@@ -32,7 +32,7 @@ class URLVerificationSmsHandlerTest {
                 Dzień dobry.
                 W związku z audytem nadzór finansowy w naszym banku proszą o potwierdzanie danych pod adresem.
                 """;
-        var result = urlVerificationSmsHandler.findURL(message);
+        var result = urlVerificationSmsHandler.findURLs(message);
         assertTrue(result.isEmpty());
     }
 }
