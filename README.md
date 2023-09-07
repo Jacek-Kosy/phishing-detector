@@ -23,3 +23,8 @@ Jak przetestować aplikację:
   "recipient": "48123456789",
   "message": "https://www.m-bonk.pl.ng/personal-data"
   }
+
+Jak można byłoby bardziej przystosować aplikację do wdrożenia produkcyjnego:
+- Przełączyć poprzez zmienne środowiskowe i ewentualne rozszerzenie konfiguracji w `application.yml` Kafkę z embedded na standalone.
+- Podobnie postąpić z bazą danych, H2 w pliku zamienić na serwer, np. PostgreSQL, MariaDB
+- Usunąć paczkę `mock`
