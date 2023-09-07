@@ -28,20 +28,20 @@ public class LinkEntity {
     @Getter(AccessLevel.NONE)
     @ElementCollection
     @CollectionTable(name = "links_threats")
-    private Map<ThreatType, ConfidenceLevel> threatRisks = new HashMap<>();
+    private Map<ThreatType, ConfidenceLevel> scores = new HashMap<>();
 
 
-    public Map<ThreatType, ConfidenceLevel> getThreatRisks() {
-        return Collections.unmodifiableMap(threatRisks);
+    public Map<ThreatType, ConfidenceLevel> getScores() {
+        return Collections.unmodifiableMap(scores);
     }
 
-    public void addThreatRisks(Map<ThreatType, ConfidenceLevel> threatMap) {
-        threatRisks.putAll(threatMap);
+    public void addScores(Map<ThreatType, ConfidenceLevel> threatMap) {
+        scores.putAll(threatMap);
     }
 
     public LinkEntity(String url, Map<ThreatType, ConfidenceLevel> threatMap) {
         this.url = url;
-        addThreatRisks(threatMap);
+        addScores(threatMap);
     }
 
 }

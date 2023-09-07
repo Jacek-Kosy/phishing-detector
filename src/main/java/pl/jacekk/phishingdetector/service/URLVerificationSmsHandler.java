@@ -64,7 +64,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
                 if (savedLink.isEmpty()) {
                     linkRepository.save(new LinkEntity(url, Map.of(ThreatType.MALWARE, ConfidenceLevel.LOW,
                             ThreatType.SOCIAL_ENGINEERING, ConfidenceLevel.EXTREMELY_HIGH, ThreatType.UNWANTED_SOFTWARE, ConfidenceLevel.MEDIUM)));
-                    log.info(linkRepository.findByUrl(url).orElseThrow().getThreatRisks().toString());
+                    log.info(linkRepository.findByUrl(url).orElseThrow().getScores().toString());
                 }
             });
         } else if (next != null) next.handle(sms);
@@ -84,8 +84,8 @@ public class URLVerificationSmsHandler implements SmsHandler {
         return result;
     }
 
-    protected boolean checkConfidenceThreshold(Map<ThreatType, ConfidenceLevel> threatMap) {
-        return threatMap.values().stream()
+    protected boolean checkConfidenceThreshold(Map<ThreatType, ConfidenceLevel> scores) {
+        return scores.values().stream()
                 .anyMatch(confidenceLevel -> confidenceLevel.compareTo(confidenceThreshold) >= 0);
     }
 
