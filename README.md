@@ -6,6 +6,8 @@ Dodatkowe założenia:
 - Zablokowane wiadomości odfiltrowujemy, a pozostałe puszczamy dalej na topic `filtered-sms-sink`
 - Rejestracja do oraz rezygnacja z usługi odbywa się poprzez wysłanie SMS, o treści START lub STOP, na numer 6789. Zarówno numer, jak i wymagana treść wiadomości, mogą być zmienione poprzez przekazanie odpowiednich zmiennych środowiskowych.
 
+Do wyciągania URL z wiadomości wykorzystałem regex z bloga: https://daringfireball.net/2010/07/improved_regex_for_matching_urls
+
 Komendy do uruchomienia:
 - `docker pull jacek2212/phishing-detector:latest`
 - `docker run -d -p 8080:8080 --mount destination=/data jacekk/phishing-detector`

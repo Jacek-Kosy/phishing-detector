@@ -1,2 +1,0 @@
-- https://stackoverflow.com/questions/63812994/how-do-i-implement-in-memory-or-embedded-kafka-not-for-testing-purposes
-- https://daringfireball.net/2010/07/improved_regex_for_matching_urls
