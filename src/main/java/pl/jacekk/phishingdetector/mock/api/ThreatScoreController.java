@@ -23,7 +23,7 @@ public class ThreatScoreController {
     private final VerificationResponse defaultResponse = new VerificationResponse(List.of(new Score(ThreatType.SOCIAL_ENGINEERING, ConfidenceLevel.LOW), new Score(
             ThreatType.MALWARE, ConfidenceLevel.LOW), new Score(ThreatType.UNWANTED_SOFTWARE, ConfidenceLevel.LOW)));
     @PostMapping("/score")
-    public VerificationResponse postSmsMessage(@RequestBody VerificationRequest verificationRequest) {
+    public VerificationResponse verifyURL(@RequestBody VerificationRequest verificationRequest) {
         log.info("Received an API request: {}", verificationRequest);
         switch (verificationRequest.uri()) {
             case "https://www.m-bonk.pl.ng/personal-data" -> {

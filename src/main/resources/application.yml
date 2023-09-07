@@ -5,6 +5,7 @@ registration:
   unregister-message: STOP
 url-verification:
   confidence-threshold: HIGHER
+  api-url: http://localhost:8080/api/v1
 spring:
   datasource:
     url: jdbc:h2:file:./data/h2
