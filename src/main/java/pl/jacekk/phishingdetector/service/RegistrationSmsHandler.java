@@ -11,6 +11,8 @@ import pl.jacekk.phishingdetector.entity.ContractEntity;
 import pl.jacekk.phishingdetector.model.SmsMessage;
 import pl.jacekk.phishingdetector.repository.ContractRepository;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -47,29 +49,31 @@ public class RegistrationSmsHandler implements SmsHandler {
         var contract = repository.findByMsisdn(msisdn);
         contract.ifPresentOrElse(contractEntity -> {
             var serviceStatus = contractEntity.getHasActiveService();
-            if (serviceStatus == null || !serviceStatus) activateService(contractEntity);
+            if (!serviceStatus) activateService(contractEntity);
             else log.info("The service is already active for MSISDN: {}", msisdn);
-        }, () -> log.info("MSISDN: {} is not from our network", msisdn));
+        }, () -> activateService(new ContractEntity(msisdn, true)));
     }
 
     protected void unregister(String msisdn) {
         var contract = repository.findByMsisdn(msisdn);
         contract.ifPresentOrElse(contractEntity -> {
             var serviceStatus = contractEntity.getHasActiveService();
-            if (serviceStatus != null && serviceStatus) deactivateService(contractEntity);
+            if (serviceStatus) deactivateService(contractEntity);
             else log.info("The service is already deactivated for MSISDN: {}", msisdn);
-        }, () -> log.info("MSISDN: {} is not from our network", msisdn));
+        }, () -> log.info("MSISDN: {} has never been registered for the service", msisdn));
     }
 
 
     protected void activateService(ContractEntity contractEntity) {
         contractEntity.setHasActiveService(true);
+        contractEntity.setLastUpdated(LocalDateTime.now());
         repository.save(contractEntity);
         log.info("MSISDN: {} is now registered for the service", contractEntity.getMsisdn());
     }
 
     protected void deactivateService(ContractEntity contractEntity) {
         contractEntity.setHasActiveService(false);
+        contractEntity.setLastUpdated(LocalDateTime.now());
         repository.save(contractEntity);
         log.info("MSISDN: {} is no longer registered for the service", contractEntity.getMsisdn());
     }
