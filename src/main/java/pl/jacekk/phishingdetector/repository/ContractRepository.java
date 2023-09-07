@@ -5,6 +5,6 @@ import pl.jacekk.phishingdetector.entity.ContractEntity;
 
 import java.util.Optional;
 
-public interface ContractRepository extends CrudRepository<ContractEntity, Long> {
+public interface ContractRepository extends CrudRepository<ContractEntity, Integer> {
     Optional<ContractEntity> findByMsisdn(String msisdn);
 }

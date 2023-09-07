@@ -1,6 +1,7 @@
 package pl.jacekk.phishingdetector.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class ContractEntity {
     @GeneratedValue
     private Integer id;
     @Getter
-    @Column(unique = true, nullable = false)
+    @NotBlank
     private String msisdn;
     @Getter
     @Setter

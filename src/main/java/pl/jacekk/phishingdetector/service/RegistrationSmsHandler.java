@@ -40,8 +40,7 @@ public class RegistrationSmsHandler implements SmsHandler {
             if (sms.message().equals(registerMessage)) register(sender);
             else if (sms.message().equals(unregisterMessage)) unregister(sender);
             else log.info("Invalid registration message from MSISDN: {}!", sender);
-        }
-        if (next != null) next.handle(sms);
+        } else if (next != null) next.handle(sms);
     }
 
     protected void register(String msisdn) {
