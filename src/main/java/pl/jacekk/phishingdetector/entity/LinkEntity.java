@@ -13,7 +13,6 @@ import pl.jacekk.phishingdetector.model.ThreatType;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Entity
 @Table(name = "links")
@@ -23,6 +22,7 @@ public class LinkEntity {
     @Id
     @GeneratedValue
     private Integer id;
+    @Getter
     @NotBlank
     private String url;
 
@@ -30,9 +30,6 @@ public class LinkEntity {
     @ElementCollection
     @CollectionTable(name = "links_threats")
     private Map<ThreatType, ConfidenceLevel> scores = new HashMap<>();
-
-    @OneToMany(mappedBy = "link")
-    private Set<BlockedMessageEntity> blockedMessages;
 
 
     public Map<ThreatType, ConfidenceLevel> getScores() {
