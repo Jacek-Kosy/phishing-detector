@@ -7,9 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "contracts")
-@AllArgsConstructor
 @NoArgsConstructor
 public class ContractEntity {
     @Id
@@ -21,4 +22,11 @@ public class ContractEntity {
     @Getter
     @Setter
     private Boolean hasActiveService;
+    @OneToMany(mappedBy = "contract")
+    private Set<BlockedMessageEntity> blockedMessages;
+
+    public ContractEntity(String msisdn, Boolean hasActiveService) {
+        this.msisdn = msisdn;
+        this.hasActiveService = hasActiveService;
+    }
 }
