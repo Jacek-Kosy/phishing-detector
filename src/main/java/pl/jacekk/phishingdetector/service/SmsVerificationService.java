@@ -10,10 +10,12 @@ import pl.jacekk.phishingdetector.model.SmsMessage;
 public class SmsVerificationService {
     private final RegistrationSmsHandler registrationSmsHandler;
     private final URLVerificationSmsHandler urlVerificationSmsHandler;
+    private final ForwardingSmsHandler forwardingSmsHandler;
 
     @PostConstruct
     private void init() {
         registrationSmsHandler.setNext(urlVerificationSmsHandler);
+        urlVerificationSmsHandler.setNext(forwardingSmsHandler);
     }
 
     public void verifySms(SmsMessage message) {

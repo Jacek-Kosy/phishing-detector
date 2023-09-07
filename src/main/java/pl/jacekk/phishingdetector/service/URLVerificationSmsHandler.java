@@ -1,5 +1,6 @@
 package pl.jacekk.phishingdetector.service;
 
+import feign.FeignException;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -10,9 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.entity.LinkEntity;
-import pl.jacekk.phishingdetector.model.ConfidenceLevel;
-import pl.jacekk.phishingdetector.model.SmsMessage;
-import pl.jacekk.phishingdetector.model.ThreatType;
+import pl.jacekk.phishingdetector.feign.ThreatScoreClient;
+import pl.jacekk.phishingdetector.model.*;
 import pl.jacekk.phishingdetector.repository.ContractRepository;
 import pl.jacekk.phishingdetector.repository.LinkRepository;
 
@@ -26,9 +26,21 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class URLVerificationSmsHandler implements SmsHandler {
+    private static final Pattern URL_PATTERN =
+            Pattern.compile("(?i)\\b((?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))");
+
+
+
+    private final ContractRepository contractRepository;
+    private final LinkRepository linkRepository;
+    private final ThreatScoreClient threatScoreClient;
+
+    @Getter
+    private SmsHandler next;
 
     @Value("${url-verification.confidence-threshold}")
     private String confidenceThresholdText;
+
     private ConfidenceLevel confidenceThreshold;
 
     @PostConstruct
@@ -41,12 +53,6 @@ public class URLVerificationSmsHandler implements SmsHandler {
             confidenceThreshold = ConfidenceLevel.HIGHER;
         }
     }
-    private static final Pattern URL_PATTERN =
-            Pattern.compile("(?i)\\b((?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))");
-    private final ContractRepository contractRepository;
-    private final LinkRepository linkRepository;
-    @Getter
-    private SmsHandler next;
 
     @Override
     public void setNext(SmsHandler smsHandler) {
@@ -59,14 +65,8 @@ public class URLVerificationSmsHandler implements SmsHandler {
         var urls = findURLs(sms.message());
         if (!urls.isEmpty() && verifyServiceStatus(sms.recipient())) {
             log.info("Message: {} qualifies for malicious URL verification", sms.message());
-            urls.forEach(url -> {
-                var savedLink = linkRepository.findByUrl(url);
-                if (savedLink.isEmpty()) {
-                    linkRepository.save(new LinkEntity(url, Map.of(ThreatType.MALWARE, ConfidenceLevel.LOW,
-                            ThreatType.SOCIAL_ENGINEERING, ConfidenceLevel.EXTREMELY_HIGH, ThreatType.UNWANTED_SOFTWARE, ConfidenceLevel.MEDIUM)));
-                    log.info(linkRepository.findByUrl(url).orElseThrow().getScores().toString());
-                }
-            });
+            if (verifyURLs(urls)) log.info("Blocking a message with malicious URL: {}", sms.message());
+            else if (next != null) next.handle(sms);
         } else if (next != null) next.handle(sms);
     }
 
@@ -89,5 +89,38 @@ public class URLVerificationSmsHandler implements SmsHandler {
                 .anyMatch(confidenceLevel -> confidenceLevel.compareTo(confidenceThreshold) >= 0);
     }
 
+    protected boolean verifyURLByAPI(String url) {
+        try {
+            var request = new VerificationRequest(url, List.of(ThreatType.SOCIAL_ENGINEERING, ThreatType.MALWARE, ThreatType.UNWANTED_SOFTWARE), true);
+            var response = threatScoreClient.verifyURL(request);
+            persistVerifiedLink(url, response);
+            log.info("Verified URL: {} and persisted the response in the database", url);
+            return checkConfidenceThreshold(response.toThreatTypeConfidenceLevelMap());
+        } catch (FeignException ex) {
+            log.warn("Failed to verify due to an exception during API call: {}", ex.getMessage());
+            return false;
+        }
+    }
+
+    protected void persistVerifiedLink(String url, VerificationResponse response) {
+        var linkEntity = new LinkEntity(url, response.toThreatTypeConfidenceLevelMap());
+        linkRepository.save(linkEntity);
+    }
+
+
+    protected boolean verifyURLUsingHistoricalData(LinkEntity linkEntity) {
+        log.info("Verifying URL: {} in the database...", linkEntity.getUrl());
+        return checkConfidenceThreshold(linkEntity.getScores());
+    }
+
+
+    protected boolean verifyURLs(List<String> urls) {
+        return urls.stream().anyMatch(this::verifyURL);
+    }
+
+    protected boolean verifyURL(String url) {
+        var savedLink = linkRepository.findByUrl(url);
+        return savedLink.map(this::verifyURLUsingHistoricalData).orElseGet(() -> verifyURLByAPI(url));
+    }
 
 }

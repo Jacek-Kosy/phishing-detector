@@ -16,8 +16,13 @@ public class EmbeddedKafkaConfig {
     }
 
     @Bean
-    public NewTopic topic() {
+    public NewTopic sourceTopic() {
         return TopicBuilder.name("sms-source").partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic sinkTopic() {
+        return TopicBuilder.name("filtered-sms-sink").partitions(1).replicas(1).build();
     }
 
 }

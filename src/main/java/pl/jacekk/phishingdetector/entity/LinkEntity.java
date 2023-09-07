@@ -22,6 +22,7 @@ public class LinkEntity {
     @Id
     @GeneratedValue
     private Integer id;
+    @Getter
     @NotBlank
     private String url;
 

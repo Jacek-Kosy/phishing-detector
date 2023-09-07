@@ -36,7 +36,7 @@ class RegistrationSmsHandlerTest {
     @Test
     void shouldRegisterIfServiceStatusIsNull() {
         var msisdn = "48123456789";
-        var contract = new ContractEntity(1, msisdn, null);
+        var contract = new ContractEntity(msisdn, null);
         Mockito.when(repository.findByMsisdn("48123456789")).thenReturn(Optional.of(contract));
         registrationSmsHandler.register(msisdn);
         var argumentCaptor = ArgumentCaptor.forClass(ContractEntity.class);
@@ -48,7 +48,7 @@ class RegistrationSmsHandlerTest {
     @Test
     void shouldRegisterIfServiceStatusIsFalse() {
         var msisdn = "48123456789";
-        var contract = new ContractEntity(1, msisdn, false);
+        var contract = new ContractEntity(msisdn, false);
         Mockito.when(repository.findByMsisdn("48123456789")).thenReturn(Optional.of(contract));
         registrationSmsHandler.register(msisdn);
         var argumentCaptor = ArgumentCaptor.forClass(ContractEntity.class);
@@ -60,7 +60,7 @@ class RegistrationSmsHandlerTest {
     @Test
     void shouldNotRegisterIfServiceStatusIsTrue() {
         var msisdn = "48123456789";
-        var contract = new ContractEntity(1, msisdn, true);
+        var contract = new ContractEntity(msisdn, true);
         Mockito.when(repository.findByMsisdn("48123456789")).thenReturn(Optional.of(contract));
         registrationSmsHandler.register(msisdn);
         Mockito.verify(repository, Mockito.never()).save(Mockito.any());
@@ -69,7 +69,7 @@ class RegistrationSmsHandlerTest {
     @Test
     void shouldUnregisterIfServiceStatusIsTrue() {
         var msisdn = "48123456789";
-        var contract = new ContractEntity(1, msisdn, true);
+        var contract = new ContractEntity(msisdn, true);
         Mockito.when(repository.findByMsisdn("48123456789")).thenReturn(Optional.of(contract));
         registrationSmsHandler.unregister(msisdn);
         var argumentCaptor = ArgumentCaptor.forClass(ContractEntity.class);
@@ -81,7 +81,7 @@ class RegistrationSmsHandlerTest {
     @Test
     void shouldNotUnregisterIfServiceStatusIsNull() {
         var msisdn = "48123456789";
-        var contract = new ContractEntity(1, msisdn, null);
+        var contract = new ContractEntity(msisdn, null);
         Mockito.when(repository.findByMsisdn("48123456789")).thenReturn(Optional.of(contract));
         registrationSmsHandler.unregister(msisdn);
         Mockito.verify(repository, Mockito.never()).save(Mockito.any());
@@ -90,7 +90,7 @@ class RegistrationSmsHandlerTest {
     @Test
     void shouldNotUnregisterIfServiceStatusIsFalse() {
         var msisdn = "48123456789";
-        var contract = new ContractEntity(1, msisdn, false);
+        var contract = new ContractEntity(msisdn, false);
         Mockito.when(repository.findByMsisdn("48123456789")).thenReturn(Optional.of(contract));
         registrationSmsHandler.unregister(msisdn);
         Mockito.verify(repository, Mockito.never()).save(Mockito.any());
@@ -98,7 +98,7 @@ class RegistrationSmsHandlerTest {
 
     @Test
     void shouldActivateService() {
-        var contract = new ContractEntity(1, "48123456789", false);
+        var contract = new ContractEntity("48123456789", false);
         registrationSmsHandler.activateService(contract);
         var argumentCaptor = ArgumentCaptor.forClass(ContractEntity.class);
         Mockito.verify(repository).save(argumentCaptor.capture());
@@ -107,7 +107,7 @@ class RegistrationSmsHandlerTest {
 
     @Test
     void shouldDeactivateService() {
-        var contract = new ContractEntity(1, "48123456789", true);
+        var contract = new ContractEntity("48123456789", true);
         registrationSmsHandler.deactivateService(contract);
         var argumentCaptor = ArgumentCaptor.forClass(ContractEntity.class);
         Mockito.verify(repository).save(argumentCaptor.capture());
