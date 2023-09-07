@@ -16,7 +16,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -28,7 +28,4 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-  sql:
-    init:
-      mode: always
 

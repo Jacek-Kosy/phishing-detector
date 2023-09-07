@@ -1,13 +1,12 @@
 package pl.jacekk.phishingdetector.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "contracts")
@@ -21,10 +20,15 @@ public class ContractEntity {
     private String msisdn;
     @Getter
     @Setter
+    @Column(nullable = false)
     private Boolean hasActiveService;
+
+    @Setter
+    private LocalDateTime lastUpdated;
 
     public ContractEntity(String msisdn, Boolean hasActiveService) {
         this.msisdn = msisdn;
         this.hasActiveService = hasActiveService;
+        this.lastUpdated = LocalDateTime.now();
     }
 }
