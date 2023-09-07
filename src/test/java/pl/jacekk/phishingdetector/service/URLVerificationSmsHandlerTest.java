@@ -2,17 +2,20 @@ package pl.jacekk.phishingdetector.service;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import pl.jacekk.phishingdetector.model.ConfidenceLevel;
+import pl.jacekk.phishingdetector.model.ThreatType;
 import pl.jacekk.phishingdetector.repository.ContractRepository;
 import pl.jacekk.phishingdetector.repository.LinkRepository;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class URLVerificationSmsHandlerTest {
     private final ContractRepository contractRepository = Mockito.mock(ContractRepository.class);
     private final LinkRepository linkRepository = Mockito.mock(LinkRepository.class);
-    private final URLVerificationSmsHandler urlVerificationSmsHandler = new URLVerificationSmsHandler(contractRepository, linkRepository);
+    private final URLVerificationSmsHandler urlVerificationSmsHandler = new URLVerificationSmsHandler("HIGHER", ConfidenceLevel.HIGHER, contractRepository, linkRepository, null);
 
     @Test
     void shouldReturnAllMatchingURLs() {
@@ -36,5 +39,23 @@ class URLVerificationSmsHandlerTest {
                 """;
         var result = urlVerificationSmsHandler.findURLs(message);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldReturnTrueIfMaxConfidenceLevelHigherThanTheThreshold() {
+        var threatMap = Map.of(ThreatType.MALWARE, ConfidenceLevel.HIGH, ThreatType.SOCIAL_ENGINEERING, ConfidenceLevel.VERY_HIGH, ThreatType.UNWANTED_SOFTWARE, ConfidenceLevel.SAFE);
+        assertTrue(urlVerificationSmsHandler.checkConfidenceThreshold(threatMap));
+    }
+
+    @Test
+    void shouldReturnTrueIfMaxConfidenceLevelEqualToTheThreshold() {
+        var threatMap = Map.of(ThreatType.MALWARE, ConfidenceLevel.HIGHER, ThreatType.SOCIAL_ENGINEERING, ConfidenceLevel.LOW, ThreatType.UNWANTED_SOFTWARE, ConfidenceLevel.SAFE);
+        assertTrue(urlVerificationSmsHandler.checkConfidenceThreshold(threatMap));
+    }
+
+    @Test
+    void shouldReturnFalseIfMaxConfidenceLevelLowerThanTheThreshold() {
+        var threatMap = Map.of(ThreatType.MALWARE, ConfidenceLevel.HIGH, ThreatType.SOCIAL_ENGINEERING, ConfidenceLevel.LOW, ThreatType.UNWANTED_SOFTWARE, ConfidenceLevel.SAFE);
+        assertFalse(urlVerificationSmsHandler.checkConfidenceThreshold(threatMap));
     }
 }

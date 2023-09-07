@@ -1,9 +1,13 @@
 package pl.jacekk.phishingdetector.service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.entity.LinkEntity;
 import pl.jacekk.phishingdetector.model.ConfidenceLevel;
@@ -19,8 +23,24 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class URLVerificationSmsHandler implements SmsHandler {
+
+    @Value("${url-verification.confidence-threshold")
+    private String confidenceThresholdText;
+    private ConfidenceLevel confidenceThreshold;
+
+    @PostConstruct
+    private void init() {
+        try {
+            confidenceThreshold = ConfidenceLevel.valueOf(confidenceThresholdText);
+            log.info("Confidence threshold set to: {}", confidenceThreshold);
+        } catch (IllegalArgumentException ex) {
+            log.warn("Setting confidence threshold from the configuration failed. Default level - HIGHER will be used.");
+            confidenceThreshold = ConfidenceLevel.HIGHER;
+        }
+    }
     private static final Pattern URL_PATTERN =
             Pattern.compile("(?i)\\b((?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))");
     private final ContractRepository contractRepository;
@@ -62,6 +82,11 @@ public class URLVerificationSmsHandler implements SmsHandler {
         var matcher = URL_PATTERN.matcher(message);
         while (matcher.find()) result.add(matcher.group());
         return result;
+    }
+
+    protected boolean checkConfidenceThreshold(Map<ThreatType, ConfidenceLevel> threatMap) {
+        return threatMap.values().stream()
+                .anyMatch(confidenceLevel -> confidenceLevel.compareTo(confidenceThreshold) >= 0);
     }
 
 

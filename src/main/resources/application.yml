@@ -3,6 +3,8 @@ registration:
   phone-number: 6789
   register-message: START
   unregister-message: STOP
+url-verification:
+  confidence-threshold: HIGHER
 spring:
   datasource:
     url: jdbc:h2:file:./data/h2
