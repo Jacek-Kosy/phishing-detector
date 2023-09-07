@@ -1,5 +1,5 @@
 package pl.jacekk.phishingdetector.model;
 
-import java.util.Map;
+import java.util.List;
 
-public record VerificationResponse (Map<ThreatType, ConfidenceLevel> scores) {}
+public record VerificationResponse (List<Score> scores) {}

@@ -1,4 +1,4 @@
-package pl.jacekk.phishingdetector.controller;
+package pl.jacekk.phishingdetector.mock.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
