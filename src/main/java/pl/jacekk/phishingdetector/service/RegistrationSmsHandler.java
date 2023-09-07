@@ -51,7 +51,7 @@ public class RegistrationSmsHandler implements SmsHandler {
             var serviceStatus = contractEntity.getHasActiveService();
             if (!serviceStatus) activateService(contractEntity);
             else log.info("The service is already active for MSISDN: {}", msisdn);
-        }, () -> repository.save(new ContractEntity(msisdn, true)));
+        }, () -> activateService(new ContractEntity(msisdn, true)));
     }
 
     protected void unregister(String msisdn) {
