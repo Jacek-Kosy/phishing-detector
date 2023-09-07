@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class URLVerificationSmsHandler implements SmsHandler {
 
-    @Value("${url-verification.confidence-threshold")
+    @Value("${url-verification.confidence-threshold}")
     private String confidenceThresholdText;
     private ConfidenceLevel confidenceThreshold;
 
