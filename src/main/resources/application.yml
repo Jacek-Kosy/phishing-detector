@@ -1,1 +1,29 @@
+api-prefix: /api/v1
+registration:
+  phone-number: ${REGISTRATION_PHONE_NUMBER:6789}
+  register-message: ${REGISTER_MESSAGE:START}
+  unregister-message: ${UNREGISTER_MESSAGE:STOP}
+url-verification:
+  confidence-threshold: ${CONFIDENCE_THRESHOLD:HIGHER}
+  api-url: ${API_URL:http://localhost:8080/api/v1}
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:h2:file:./data/h2}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME:org.h2.Driver}
+  jpa:
+    database-platform: ${DATABASE_PLATFORM:org.hibernate.dialect.H2Dialect}
+    hibernate:
+      ddl-auto: update
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "pl.jacekk.*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
