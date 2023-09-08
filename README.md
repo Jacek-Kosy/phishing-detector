@@ -29,4 +29,5 @@ Jak przetestować aplikację:
 Jak można byłoby bardziej przystosować aplikację do wdrożenia produkcyjnego:
 - Przełączyć poprzez zmienne środowiskowe i ewentualne rozszerzenie konfiguracji w `application.yml` Kafkę z embedded na standalone.
 - Podobnie postąpić z bazą danych, H2 w pliku zamienić na serwer, np. PostgreSQL, MariaDB
+- Zmienić adres zewnętrznego API na docelowy, dodać obsługę autoryzacji
 - Usunąć paczkę `mock`
