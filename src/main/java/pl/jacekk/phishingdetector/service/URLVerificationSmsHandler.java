@@ -28,9 +28,6 @@ import java.util.regex.Pattern;
 public class URLVerificationSmsHandler implements SmsHandler {
     private static final Pattern URL_PATTERN =
             Pattern.compile("(?i)\\b((?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))");
-
-
-
     private final ContractRepository contractRepository;
     private final LinkRepository linkRepository;
     private final ThreatScoreClient threatScoreClient;
