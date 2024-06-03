@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.entity.LinkEntity;
 import pl.jacekk.phishingdetector.feign.ThreatScoreClient;
@@ -31,6 +32,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
     private final ContractRepository contractRepository;
     private final LinkRepository linkRepository;
     private final ThreatScoreClient threatScoreClient;
+    private final KafkaTemplate<String, SmsMessage> template;
 
     @Getter
     private SmsHandler next;
@@ -62,7 +64,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
         var urls = findURLs(sms.message());
         if (!urls.isEmpty() && verifyServiceStatus(sms.recipient())) {
             log.info("Message: {} qualifies for malicious URL verification", sms.message());
-            if (verifyURLs(urls)) log.info("Blocking a message with malicious URL: {}", sms.message());
+            if (verifyURLs(urls)) publishToTheRejectedMessagesTopic(sms);
             else if (next != null) next.handle(sms);
         } else if (next != null) next.handle(sms);
     }
@@ -118,6 +120,12 @@ public class URLVerificationSmsHandler implements SmsHandler {
     protected boolean verifyURL(String url) {
         var savedLink = linkRepository.findByUrl(url);
         return savedLink.map(this::verifyURLUsingHistoricalData).orElseGet(() -> verifyURLByAPI(url));
+    }
+
+    protected void publishToTheRejectedMessagesTopic(SmsMessage sms) {
+        log.info("Blocking a message with malicious URL: {}", sms.message());
+        template.send("sms-source-rejected", sms.recipient(), sms);
+
     }
 
 }
