@@ -9,9 +9,7 @@ echo "Hello, World" | ~/kafka/bin/kafka-console-producer.sh --broker-list localh
 ./bin/kafka-console-consumer.sh --topic test-topic --bootstrap-server 172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092 --from-beginning
 
 
-./bin/kafka-topics.sh --create --topic sms-source
- \ --bootstrap-server 172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092
- \ --replication-factor 3 --partitions 3
+./bin/kafka-topics.sh --create --topic sms-source --bootstrap-server 172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092 --replication-factor 3 --partitions 3
 ./bin/kafka-topics.sh --create --topic sms-source-filtered
  \ --bootstrap-server 172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092
  \ --replication-factor 3 --partitions 3
@@ -19,4 +17,4 @@ echo "Hello, World" | ~/kafka/bin/kafka-console-producer.sh --broker-list localh
  \ --bootstrap-server 172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092
  \ --replication-factor 3 --partitions 3
 
-sudo docker run -e KAFKA_BOOTSTRAP_SERVERS=172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092 -p 8080:8080 phishing-detector
+sudo docker run -e KAFKA_BOOTSTRAP_SERVERS=172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092 -p 8080:8080 --host=0.0.0.0 phishing-detector
