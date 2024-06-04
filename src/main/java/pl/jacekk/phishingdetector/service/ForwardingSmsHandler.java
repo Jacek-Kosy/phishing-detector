@@ -25,8 +25,8 @@ public class ForwardingSmsHandler implements SmsHandler {
 
     @Override
     public void handle(SmsMessage sms) {
-        log.info("Forwarding SMS: {} to the filtered-sms-sink topic...", sms);
-        template.send("filtered-sms-sink", sms.recipient(), sms);
+        log.info("Forwarding SMS: {} to the sms-source-filtered topic...", sms);
+        template.send("sms-source-filtered", sms.recipient(), sms);
         if (next != null) next.handle(sms);
     }
 }

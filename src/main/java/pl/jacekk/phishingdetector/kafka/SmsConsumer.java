@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.model.SmsMessage;
-import pl.jacekk.phishingdetector.service.RegistrationSmsHandler;
 import pl.jacekk.phishingdetector.service.SmsVerificationService;
 
 @Slf4j
@@ -13,7 +12,6 @@ import pl.jacekk.phishingdetector.service.SmsVerificationService;
 @RequiredArgsConstructor
 public class SmsConsumer {
     private final SmsVerificationService smsVerificationService;
-
 
     @KafkaListener(topics = "sms-source", groupId = "phishing-detector")
     public void listen(SmsMessage message) {
