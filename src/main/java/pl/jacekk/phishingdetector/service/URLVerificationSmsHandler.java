@@ -7,9 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.entity.LinkEntity;
 import pl.jacekk.phishingdetector.feign.ThreatScoreClient;
@@ -32,7 +32,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
     private final ContractRepository contractRepository;
     private final LinkRepository linkRepository;
     private final ThreatScoreClient threatScoreClient;
-    private final KafkaTemplate<String, SmsMessage> template;
+    private final RabbitTemplate template;
 
     @Getter
     private SmsHandler next;
@@ -124,7 +124,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
 
     protected void publishToTheRejectedMessagesTopic(SmsMessage sms) {
         log.info("Blocking a message with malicious URL: {}", sms.message());
-        template.send("sms-source-rejected", sms.recipient(), sms);
+        template.convertAndSend("", "q.sms-source-rejected", sms);
 
     }
 

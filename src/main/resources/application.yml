@@ -16,15 +16,8 @@ spring:
     database-platform: ${DATABASE_PLATFORM:org.hibernate.dialect.H2Dialect}
     hibernate:
       ddl-auto: update
-  kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "pl.jacekk.*"
-        spring.json.value.default.type: "pl.jacekk.phishingdetector.model.SmsMessage"
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  rabbitmq:
+    addresses: 172.31.35.60:5672,172.31.39.154:5672,172.31.41.185:5672
+    username: ${RABBITMQ_USERNAME:mateo}
+    password: ${RABBITMQ_PASSWORD}
 

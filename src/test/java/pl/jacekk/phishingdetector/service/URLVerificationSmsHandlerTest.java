@@ -2,10 +2,9 @@ package pl.jacekk.phishingdetector.service;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import pl.jacekk.phishingdetector.feign.ThreatScoreClient;
 import pl.jacekk.phishingdetector.model.ConfidenceLevel;
-import pl.jacekk.phishingdetector.model.SmsMessage;
 import pl.jacekk.phishingdetector.model.ThreatType;
 import pl.jacekk.phishingdetector.repository.ContractRepository;
 import pl.jacekk.phishingdetector.repository.LinkRepository;
@@ -13,13 +12,14 @@ import pl.jacekk.phishingdetector.repository.LinkRepository;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class URLVerificationSmsHandlerTest {
     private final ContractRepository contractRepository = Mockito.mock(ContractRepository.class);
     private final LinkRepository linkRepository = Mockito.mock(LinkRepository.class);
     private final ThreatScoreClient threatScoreClient = Mockito.mock(ThreatScoreClient.class);
-    private final KafkaTemplate kafkaTemplate = Mockito.mock(KafkaTemplate.class);
+    private final RabbitTemplate kafkaTemplate = Mockito.mock(RabbitTemplate.class);
     private final URLVerificationSmsHandler urlVerificationSmsHandler = new URLVerificationSmsHandler(contractRepository, linkRepository, threatScoreClient, kafkaTemplate, null, "HIGHER", ConfidenceLevel.HIGHER);
 
     @Test

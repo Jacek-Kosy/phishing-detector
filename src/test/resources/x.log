@@ -1,0 +1,22 @@
+2024-06-05T12:50:22.387Z ERROR 1 --- [ntainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : Consumer exception
+
+java.lang.IllegalStateException: This error handler cannot process 'org.apache.kafka.common.errors.TimeoutException's; no record information is available
+	at org.springframework.kafka.listener.DefaultErrorHandler.handleOtherException(DefaultErrorHandler.java:204) ~[spring-kafka-3.0.17.jar!/:3.0.17]
+	at org.springframework.kafka.listener.KafkaMessageListenerContainer$ListenerConsumer.handleConsumerException(KafkaMessageListenerContainer.java:1990) ~[spring-kafka-3.0.17.jar!/:3.0.17]
+	at org.springframework.kafka.listener.KafkaMessageListenerContainer$ListenerConsumer.run(KafkaMessageListenerContainer.java:1409) ~[spring-kafka-3.0.17.jar!/:3.0.17]
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+Caused by: org.apache.kafka.common.errors.TimeoutException: Timeout of 60000ms expired before successfully committing offsets
+{sms-source-0=OffsetAndMetadata{offset=19539, leaderEpoch=null, metadata=''}}
+
+p.j.p.service.URLVerificationSmsHandler  : Message: Hello, google search: http://google.pl qualifies for malicious URL verification
+p.j.p.service.URLVerificationSmsHandler  : Verifying URL: http://google.pl in the database...
+p.j.p.service.ForwardingSmsHandler       : Forwarding SMS: SmsMessage[sender=48797234594, recipient=48797234596, message=Hello, google search: http://google.pl] to the sms-source-filtered topic...
+org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-phishing-detector-1, groupId=phishing-detector] Disconnecting from node 2 due to request timeout.
+org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-phishing-detector-1, groupId=phishing-detector] Cancelled in-flight METADATA request with correlation id 42558 due to node 2
+being disconnected (elapsed time since creation: 32967ms, elapsed time since send: 32967ms, request timeout: 30000ms)
+org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-phishing-detector-1, groupId=phishing-detector] Cancelled in-flight FIND_COORDINATOR request with correlation id 42559
+due to node 2 being disconnected (elapsed time since creation: 32866ms, elapsed time since send: 32867ms, request timeout: 30000ms)
+o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-phishing-detector-1, groupId=phishing-detector] Group coordinator ip-172-31-44-7.ec2.internal:9092 (id: 2147483645 rack: null)
+is unavailable or invalid due to cause: session timed out without receiving a heartbeat response.
+isDisconnected: false. Rediscovery will be attempted.
