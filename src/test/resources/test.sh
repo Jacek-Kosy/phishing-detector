@@ -17,4 +17,17 @@ echo "Hello, World" | ~/kafka/bin/kafka-console-producer.sh --broker-list localh
  \ --bootstrap-server 172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092
  \ --replication-factor 3 --partitions 3
 
-sudo docker run -e KAFKA_BOOTSTRAP_SERVERS=172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092 -p 8080:8080 --host=0.0.0.0 phishing-detector
+sudo docker run -e KAFKA_BOOTSTRAP_SERVERS=172.31.45.10:9092,172.31.44.7:9092,172.31.37.181:9092 -p 8080:8080 phishing-detector
+sudo docker run -e RABBITMQ_PASSWORD=denaturat123 -e SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true -p 8080:8080 phishing-detector
+
+server.1=0.0.0.0:2888:3888
+server.2=172.31.33.28:2888:3888
+server.3=172.31.37.110:2888:3888
+
+server.1=172.31.32.59:2888:3888
+server.2=0.0.0.0:2888:3888
+server.3=172.31.37.110:2888:3888
+
+server.1=172.31.32.59:2888:3888
+server.2=172.31.33.28:2888:3888
+server.3=0.0.0.0:2888:3888
