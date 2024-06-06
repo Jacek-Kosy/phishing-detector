@@ -2,7 +2,7 @@ package pl.jacekk.phishingdetector.service;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.pulsar.core.PulsarTemplate;
 import pl.jacekk.phishingdetector.feign.ThreatScoreClient;
 import pl.jacekk.phishingdetector.model.ConfidenceLevel;
 import pl.jacekk.phishingdetector.model.ThreatType;
@@ -19,7 +19,7 @@ class URLVerificationSmsHandlerTest {
     private final ContractRepository contractRepository = Mockito.mock(ContractRepository.class);
     private final LinkRepository linkRepository = Mockito.mock(LinkRepository.class);
     private final ThreatScoreClient threatScoreClient = Mockito.mock(ThreatScoreClient.class);
-    private final RabbitTemplate kafkaTemplate = Mockito.mock(RabbitTemplate.class);
+    private final PulsarTemplate kafkaTemplate = Mockito.mock(PulsarTemplate.class);
     private final URLVerificationSmsHandler urlVerificationSmsHandler = new URLVerificationSmsHandler(contractRepository, linkRepository, threatScoreClient, kafkaTemplate, null, "HIGHER", ConfidenceLevel.HIGHER);
 
     @Test

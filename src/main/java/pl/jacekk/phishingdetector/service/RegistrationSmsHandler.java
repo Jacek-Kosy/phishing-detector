@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pulsar.client.api.PulsarClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class RegistrationSmsHandler implements SmsHandler {
     }
 
     @Override
-    public void handle(SmsMessage sms) {
+    public void handle(SmsMessage sms) throws PulsarClientException {
         var sender = sms.sender();
         if (sms.recipient().equals(registrationNumber)) {
             if (sms.message().equals(registerMessage)) register(sender);

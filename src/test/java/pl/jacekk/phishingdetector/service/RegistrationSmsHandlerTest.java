@@ -1,5 +1,6 @@
 package pl.jacekk.phishingdetector.service;
 
+import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -25,7 +26,7 @@ class RegistrationSmsHandlerTest {
     }
 
     @Test
-    void shouldPassToTheNextHandlerIfTheRecipientIsNotRegistrationNumber() {
+    void shouldPassToTheNextHandlerIfTheRecipientIsNotRegistrationNumber() throws PulsarClientException {
         var nextHandler = Mockito.mock(SmsHandler.class);
         registrationSmsHandler.setNext(nextHandler);
         var sms = new SmsMessage("48123456789", "2345", "START");

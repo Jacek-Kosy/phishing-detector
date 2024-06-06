@@ -7,9 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.apache.pulsar.client.api.PulsarClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.entity.LinkEntity;
 import pl.jacekk.phishingdetector.feign.ThreatScoreClient;
@@ -32,7 +33,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
     private final ContractRepository contractRepository;
     private final LinkRepository linkRepository;
     private final ThreatScoreClient threatScoreClient;
-    private final RabbitTemplate template;
+    private final PulsarTemplate<SmsMessage> template;
 
     @Getter
     private SmsHandler next;
@@ -60,7 +61,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
 
     @Override
     @Transactional
-    public void handle(SmsMessage sms) {
+    public void handle(SmsMessage sms) throws PulsarClientException {
         var urls = findURLs(sms.message());
         if (!urls.isEmpty() && verifyServiceStatus(sms.recipient())) {
             log.info("Message: {} qualifies for malicious URL verification", sms.message());
@@ -122,9 +123,9 @@ public class URLVerificationSmsHandler implements SmsHandler {
         return savedLink.map(this::verifyURLUsingHistoricalData).orElseGet(() -> verifyURLByAPI(url));
     }
 
-    protected void publishToTheRejectedMessagesTopic(SmsMessage sms) {
+    protected void publishToTheRejectedMessagesTopic(SmsMessage sms) throws PulsarClientException {
         log.info("Blocking a message with malicious URL: {}", sms.message());
-        template.convertAndSend("", "q.sms-source-rejected", sms);
+        template.send("persistent://public/phishing-detection/sms-source-rejected",  sms);
 
     }
 

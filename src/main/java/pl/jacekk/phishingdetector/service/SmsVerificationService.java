@@ -2,6 +2,7 @@ package pl.jacekk.phishingdetector.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.apache.pulsar.client.api.PulsarClientException;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.model.SmsMessage;
 
@@ -18,7 +19,7 @@ public class SmsVerificationService {
         urlVerificationSmsHandler.setNext(forwardingSmsHandler);
     }
 
-    public void verifySms(SmsMessage message) {
+    public void verifySms(SmsMessage message) throws PulsarClientException {
         registrationSmsHandler.handle(message);
     }
 }
