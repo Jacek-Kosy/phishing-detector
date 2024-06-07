@@ -13,7 +13,8 @@ import pl.jacekk.phishingdetector.service.SmsVerificationService;
 public class SmsListener {
     private final SmsVerificationService smsVerificationService;
 
-    @PulsarListener(subscriptionName = "phishing-detector", subscriptionType = SubscriptionType.Shared, topics = "persistent://public/phishing-detection/sms-source")
+    @PulsarListener(subscriptionName = "phishing-detector", subscriptionType = SubscriptionType.Shared,
+            topics = "persistent://public/phishing-detection/sms-source")
     public void listen(SmsMessage message) throws PulsarClientException {
         smsVerificationService.verifySms(message);
     }
