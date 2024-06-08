@@ -21,3 +21,4 @@ do
   \ -m "{\"sender\":\"48797234594\",\"recipient\":\"48797234596\",\"message\":\"click pls, https://www.m-bonk.pl.ng/personal-data\"}" -s "\n"
 done
 echo "Timestamp end: $(date -u +'%s%N')"
+

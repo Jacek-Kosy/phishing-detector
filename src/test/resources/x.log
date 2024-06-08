@@ -20,3 +20,12 @@ due to node 2 being disconnected (elapsed time since creation: 32866ms, elapsed 
 o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-phishing-detector-1, groupId=phishing-detector] Group coordinator ip-172-31-44-7.ec2.internal:9092 (id: 2147483645 rack: null)
 is unavailable or invalid due to cause: session timed out without receiving a heartbeat response.
 isDisconnected: false. Rediscovery will be attempted.
+
+
+2024-06-07T02:57:28.491Z  INFO 1 --- [r-client-io-1-1] o.apache.pulsar.client.impl.ClientCnx    : [pb2-pc-a6ad1e00.aws-euc1-prod-snci-pool-slug.streamnative.aws.snio.cloud/18.157.129.29:6651] Broker notification of Closed producer: 226
+2024-06-07T02:57:28.492Z  INFO 1 --- [r-client-io-1-1] o.a.p.client.impl.ConnectionHandler      : [persistent://public/phishing-detection/sms-source-rejected-partition-0] [pulsar-cluster-2-584] Closed connection [id: 0x4e3c25ba, L:/172.17.0.2:54570 - R:pb2-pc-a6ad1e00.aws-euc1-prod-snci-pool-slug.streamnative.aws.snio.cloud/18.157.129.29:6651] -- Will try again in 0.1 s
+2024-06-07T02:57:28.495Z  INFO 1 --- [r-client-io-1-1] o.apache.pulsar.client.impl.ClientCnx    : [pb2-pc-a6ad1e00.aws-euc1-prod-snci-pool-slug.streamnative.aws.snio.cloud/18.157.129.29:6651] Broker notification of Closed consumer: 0
+2024-06-07T02:57:28.495Z  INFO 1 --- [r-client-io-1-1] o.a.p.client.impl.ConnectionHandler      : [persistent://public/phishing-detection/sms-source-partition-0] [phishing-detector] Closed connection [id: 0x4e3c25ba, L:/172.17.0.2:54570 - R:pb2-pc-a6ad1e00.aws-euc1-prod-snci-pool-slug.streamnative.aws.snio.cloud/18.157.129.29:6651] -- Will try again in 0.1 s
+2024-06-07T02:57:28.594Z  INFO 1 --- [ulsar-timer-6-1] o.a.p.client.impl.ConnectionHandler      : [persistent://public/phishing-detection/sms-source-rejected-partition-0] [pulsar-cluster-2-584] Reconnecting after timeout
+2024-06-07T02:57:28.597Z  INFO 1 --- [ulsar-timer-6-1] o.a.p.client.impl.ConnectionHandler      : [persistent://public/phishing-detection/sms-source-partition-0] [phishing-detector] Reconnecting after timeout
+2024-06-07T02:57:28.817Z  INFO 1 --- [r-client-io-1-1] o.a.pulsar.client.impl.ProducerImpl      : [persistent://public/phishing-detection/sms-source-rejected-partition-0] [pulsar-cluster-2-584] Creating producer on cnx [id: 0x1322b8b0, L:/172.17.0.2:52258 - R:pb0-pc-a6ad1e00.aws-euc1-prod-snci-pool-slug.streamnative.aws.snio.cloud/18.157.129.29:6651]
