@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import pl.jacekk.phishingdetector.entity.LinkEntity;
 import pl.jacekk.phishingdetector.feign.ThreatScoreClient;
@@ -70,11 +72,10 @@ public class URLVerificationSmsHandler implements SmsHandler {
         } else if (next != null) next.handle(sms);
     }
 
+    @Cacheable(value = "contractCache", key = "#msisdn")
     protected boolean verifyServiceStatus(String msisdn) {
-        var contract = contractRepository.findByMsisdn(msisdn);
-        if (contract.isEmpty()) return false;
-        else if (contract.get().getHasActiveService() == null) return false;
-        else return contract.get().getHasActiveService();
+        // Use the optimized repository method for better performance
+        return contractRepository.existsByMsisdnAndActiveService(msisdn);
     }
 
     protected List<String> findURLs(String message) {
@@ -89,6 +90,7 @@ public class URLVerificationSmsHandler implements SmsHandler {
                 .anyMatch(confidenceLevel -> confidenceLevel.compareTo(confidenceThreshold) >= 0);
     }
 
+    @Cacheable(value = "urlVerificationCache", key = "#url")
     protected boolean verifyURLByAPI(String url) {
         try {
             var request = new VerificationRequest(url, List.of(ThreatType.SOCIAL_ENGINEERING, ThreatType.MALWARE, ThreatType.UNWANTED_SOFTWARE), true);
@@ -115,7 +117,13 @@ public class URLVerificationSmsHandler implements SmsHandler {
 
 
     protected boolean verifyURLs(List<String> urls) {
-        return urls.stream().anyMatch(this::verifyURL);
+        // If only one URL, process synchronously
+        if (urls.size() == 1) {
+            return verifyURL(urls.get(0));
+        }
+        
+        // For multiple URLs, use parallel streams for better performance
+        return urls.parallelStream().anyMatch(this::verifyURL);
     }
 
     protected boolean verifyURL(String url) {

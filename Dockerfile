@@ -1,8 +1,22 @@
-FROM maven:3-openjdk-17-slim AS build
-COPY . .
-RUN mvn clean package
+FROM openjdk:17-jdk-slim
 
-FROM gcr.io/distroless/java17-debian11
-COPY --from=build target/phishing-detector-0.0.1-SNAPSHOT.jar app.jar
+# Set JVM options for optimal performance
+ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+OptimizeStringConcat -Djava.security.egd=file:/dev/./urandom"
+
+# Create app user for security
+RUN useradd -r -s /bin/false appuser
+
+WORKDIR /app
+
+# Copy the jar file
+COPY target/phishing-detector-*.jar app.jar
+
+# Change ownership to app user
+RUN chown appuser:appuser app.jar
+
+USER appuser
+
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+
+# Use exec form to ensure proper signal handling
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

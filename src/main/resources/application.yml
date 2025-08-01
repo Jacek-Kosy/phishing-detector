@@ -6,16 +6,47 @@ registration:
 url-verification:
   confidence-threshold: ${CONFIDENCE_THRESHOLD:HIGHER}
   api-url: ${API_URL:http://localhost:8080/api/v1}
+
+# Caching configuration
 spring:
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=10000,expireAfterWrite=30m
+    cache-names:
+      - urlVerificationCache
+      - contractCache
+      - activeContractCache
+      - linkCache
+  
+  # Database configuration
   datasource:
     url: ${DB_URL:jdbc:h2:file:./data/h2}
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:}
     driver-class-name: ${DB_DRIVER_CLASS_NAME:org.h2.Driver}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+  
   jpa:
     database-platform: ${DATABASE_PLATFORM:org.hibernate.dialect.H2Dialect}
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 20
+          order_inserts: true
+          order_updates: true
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+  
+  # Kafka configuration
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
@@ -23,7 +54,62 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "pl.jacekk.*"
+        fetch.min.bytes: 1024
+        fetch.max.wait.ms: 500
+        max.poll.records: 100
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        batch.size: 16384
+        linger.ms: 10
+        compression.type: lz4
+
+# Feign configuration
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 10000
+        logger-level: basic
+  httpclient:
+    enabled: true
+    max-connections: 200
+    max-connections-per-route: 50
+    connection-timeout: 5000
+    connection-timer-repeat: 3000
+
+# Logging configuration
+logging:
+  level:
+    pl.jacekk.phishingdetector: INFO
+    org.springframework.cache: WARN
+    org.hibernate.SQL: WARN
+    org.springframework.web: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator configuration for monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,prometheus,caches
+  endpoint:
+    health:
+      show-details: when-authorized
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5,0.9,0.95,0.99
+      sla:
+        http.server.requests: 50ms,100ms,200ms,500ms
 

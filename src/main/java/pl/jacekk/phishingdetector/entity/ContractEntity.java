@@ -9,14 +9,18 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "contracts")
+@Table(name = "contracts", indexes = {
+    @Index(name = "idx_contract_msisdn", columnList = "msisdn"),
+    @Index(name = "idx_contract_service_status", columnList = "hasActiveService")
+})
 @NoArgsConstructor
 public class ContractEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Getter
     @NotBlank
+    @Column(unique = true)
     private String msisdn;
     @Getter
     @Setter
