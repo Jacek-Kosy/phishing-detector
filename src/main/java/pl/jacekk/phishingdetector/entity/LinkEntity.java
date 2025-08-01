@@ -15,15 +15,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "links")
+@Table(name = "links", indexes = {
+    @Index(name = "idx_link_url", columnList = "url", unique = true)
+})
 @AllArgsConstructor
 @NoArgsConstructor
 public class LinkEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Getter
     @NotBlank
+    @Column(unique = true, length = 2048)
     private String url;
 
     @Getter(AccessLevel.NONE)
